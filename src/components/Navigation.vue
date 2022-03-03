@@ -7,8 +7,8 @@
       </div>
       <ul class="flex flex-1 justify-end gap-x-10">
         <router-link class="cursor-pointer" :to="{ name: 'Home' }">Home</router-link>
-        <router-link class="cursor-pointer" :to="{ name: '' }">Create</router-link>
-        <router-link class="cursor-pointer" :to="{ name: 'Login' }">Login</router-link>
+        <router-link v-if="user" class="cursor-pointer" :to="{ name: '' }">Create</router-link>
+        <router-link v-if="!user" class="cursor-pointer" :to="{ name: 'Login' }">Login</router-link>
         <li @click="logout" class="cursor-pointer">Logout</li>
       </ul>
     </nav>
@@ -16,12 +16,15 @@
 </template>
 
 <script>
+import store from "../store/index"
+import { computed } from "vue"
 import { supabase } from "../supabase/init"
 import { useRouter } from "vue-router"
 
 export default {
   setup() {
     // Get user from store
+    const user = computed(() => store.state.user)
 
     // Setup ref to router
     const router = useRouter()
@@ -29,10 +32,10 @@ export default {
     // Logout function
     const logout = async () => {
       await supabase.auth.signOut()
-      router.push('Home')
+      router.push({ name: 'Home' })
     }
 
-    return { logout };
+    return { logout, user };
   },
 };
 </script>
